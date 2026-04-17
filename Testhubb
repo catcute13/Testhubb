@@ -1,51 +1,63 @@
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
+-- Cấu hình giá trị mặc định
 _G.AutoFarm = _G.AutoFarm or false
 _G.WalkSpeedValue = _G.WalkSpeedValue or 80
 
--- Xóa UI cũ nếu đã tồn tại
+-- Xóa UI cũ nếu đang chạy
 if playerGui:FindFirstChild("SuFarmerControlUI") then
     playerGui.SuFarmerControlUI:Destroy()
 end
 
+-- Tạo giao diện chính
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "SuFarmerControlUI"
 screenGui.ResetOnSpawn = false
 
+-- Khung chứa 2 nút (Chỉnh Position cao lên để trên Setting Allies)
 local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 110, 0, 50)
-frame.Position = UDim2.new(0, 10, 0, 150) -- Chỉnh lại vị trí để không bị che
-frame.BackgroundTransparency = 0.5
-frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.Position = UDim2.new(0, 15, 0, 80) -- Đã đẩy lên cao (giảm chỉ số Y từ 150 xuống 80)
+frame.BackgroundTransparency = 1
 
+-- Nút Tự động Nhặt (Auto Farm)
 local farmBtn = Instance.new("TextButton", frame)
 farmBtn.Size = UDim2.new(0, 50, 0, 50)
-farmBtn.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+farmBtn.BackgroundColor3 = Color3.new(0, 0, 0)
+farmBtn.BackgroundTransparency = 0.3
 farmBtn.TextScaled = true
 local stroke1 = Instance.new("UIStroke", farmBtn)
 stroke1.Color = Color3.new(1, 1, 1)
+stroke1.Thickness = 1.5
 
+-- Nút Chạy nhanh (Speed)
 local speedBtn = Instance.new("TextButton", frame)
 speedBtn.Size = UDim2.new(0, 50, 0, 50)
 speedBtn.Position = UDim2.new(0, 55, 0, 0)
-speedBtn.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+speedBtn.BackgroundColor3 = Color3.new(0, 0, 0)
+speedBtn.BackgroundTransparency = 0.3
 speedBtn.TextScaled = true
 local stroke2 = Instance.new("UIStroke", speedBtn)
 stroke2.Color = Color3.new(1, 1, 1)
+stroke2.Thickness = 1.5
 
+-- Hàm cập nhật trạng thái hiển thị
 local function updateUI()
-    farmBtn.Text = _G.AutoFarm and "FARM\nBẬT" or "FARM\nTẮT"
+    farmBtn.Text = _G.AutoFarm and "NHẶT\nBẬT" or "NHẶT\nTẮT"
     farmBtn.TextColor3 = _G.AutoFarm and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
-    speedBtn.Text = "SPEED\n" .. tostring(_G.WalkSpeedValue)
+    
+    speedBtn.Text = "CHẠY\n" .. tostring(_G.WalkSpeedValue)
     speedBtn.TextColor3 = Color3.new(1, 1, 1)
 end
 
+-- Xử lý khi bấm nút Nhặt
 farmBtn.MouseButton1Click:Connect(function()
     _G.AutoFarm = not _G.AutoFarm
     updateUI()
 end)
 
+-- Xử lý khi bấm nút Chạy nhanh
 speedBtn.MouseButton1Click:Connect(function()
     if _G.WalkSpeedValue == 80 then
         _G.WalkSpeedValue = 200
@@ -54,16 +66,17 @@ speedBtn.MouseButton1Click:Connect(function()
     else
         _G.WalkSpeedValue = 80
     end
-    player.Character.Humanoid.WalkSpeed = _G.WalkSpeedValue
     updateUI()
 end)
 
--- Vòng lặp cập nhật WalkSpeed liên tục để tránh bị game reset
+-- Vòng lặp duy trì tốc độ (Fix lỗi bị game reset speed)
 task.spawn(function()
     while true do
-        if player.Character and player.Character:FindFirstChild("Humanoid") then
-            player.Character.Humanoid.WalkSpeed = _G.WalkSpeedValue
-        end
+        pcall(function()
+            if player.Character and player.Character:FindFirstChild("Humanoid") then
+                player.Character.Humanoid.WalkSpeed = _G.WalkSpeedValue
+            end
+        end)
         task.wait(0.1)
     end
 end)
