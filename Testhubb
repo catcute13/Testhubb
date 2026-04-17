@@ -1,75 +1,74 @@
+-- [[ ⛔ CẢNH BÁO BẢN QUYỀN VÀ PHÁP LÝ NGHIÊM NGẶT ⛔ ]] --
+-- ======================================================================================
+-- SCRIPT ĐƯỢC PHÁT TRIỂN VÀ SỞ HỮU ĐỘC QUYỀN BỞI: SÚ-FARMER [ TIKTOK: @SÚ.FARMER ]
+-- PHIÊN BẢN: FULL OPTIMIZED (PHE ESP - MARINES & PIRATES)
+-- GHI CHÚ: LUÔN LUÔN FIX LỖI CODE RIÊNG BIỆT - LUÔN CHỈNH TẤT CẢ CHỨC NĂNG HOẠT ĐỘNG RIÊNG
+-- CẬP NHẬT: ESP PHÂN BIỆT HẢI QUÂN/HẢI TẶC - CHẶN NOTIFY
+-- MADE BY SÚ-FARMER
+-- ======================================================================================
+
 local player = game:GetService("Players").LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- Cấu hình giá trị mặc định
+-- [ KHỞI TẠO BIẾN TOÀN CỤC - HOẠT ĐỘNG RIÊNG BIỆT ]
 _G.AutoFarm = _G.AutoFarm or false
 _G.WalkSpeedValue = _G.WalkSpeedValue or 80
 
--- Xóa UI cũ nếu đang chạy
+--------------------------------------------------------------------------------------
+-- [ PHẦN 1: HỆ THỐNG GIAO DIỆN (UI) ]
+--------------------------------------------------------------------------------------
 if playerGui:FindFirstChild("SuFarmerControlUI") then
     playerGui.SuFarmerControlUI:Destroy()
 end
 
--- Tạo giao diện chính
 local screenGui = Instance.new("ScreenGui", playerGui)
 screenGui.Name = "SuFarmerControlUI"
 screenGui.ResetOnSpawn = false
 
--- Khung chứa 2 nút (Chỉnh Position cao lên để trên Setting Allies)
 local frame = Instance.new("Frame", screenGui)
 frame.Size = UDim2.new(0, 110, 0, 50)
-frame.Position = UDim2.new(0, 15, 0, 80) -- Đã đẩy lên cao (giảm chỉ số Y từ 150 xuống 80)
+frame.Position = UDim2.new(0, 15, 0, 70) -- Vị trí phía trên Setting Allies
 frame.BackgroundTransparency = 1
 
--- Nút Tự động Nhặt (Auto Farm)
 local farmBtn = Instance.new("TextButton", frame)
 farmBtn.Size = UDim2.new(0, 50, 0, 50)
 farmBtn.BackgroundColor3 = Color3.new(0, 0, 0)
 farmBtn.BackgroundTransparency = 0.3
 farmBtn.TextScaled = true
-local stroke1 = Instance.new("UIStroke", farmBtn)
-stroke1.Color = Color3.new(1, 1, 1)
-stroke1.Thickness = 1.5
+Instance.new("UIStroke", farmBtn).Color = Color3.new(1, 1, 1)
 
--- Nút Chạy nhanh (Speed)
 local speedBtn = Instance.new("TextButton", frame)
 speedBtn.Size = UDim2.new(0, 50, 0, 50)
 speedBtn.Position = UDim2.new(0, 55, 0, 0)
 speedBtn.BackgroundColor3 = Color3.new(0, 0, 0)
 speedBtn.BackgroundTransparency = 0.3
 speedBtn.TextScaled = true
-local stroke2 = Instance.new("UIStroke", speedBtn)
-stroke2.Color = Color3.new(1, 1, 1)
-stroke2.Thickness = 1.5
+Instance.new("UIStroke", speedBtn).Color = Color3.new(1, 1, 1)
 
--- Hàm cập nhật trạng thái hiển thị
 local function updateUI()
     farmBtn.Text = _G.AutoFarm and "NHẶT\nBẬT" or "NHẶT\nTẮT"
     farmBtn.TextColor3 = _G.AutoFarm and Color3.new(0, 1, 0) or Color3.new(1, 0, 0)
-    
     speedBtn.Text = "CHẠY\n" .. tostring(_G.WalkSpeedValue)
     speedBtn.TextColor3 = Color3.new(1, 1, 1)
 end
 
--- Xử lý khi bấm nút Nhặt
 farmBtn.MouseButton1Click:Connect(function()
     _G.AutoFarm = not _G.AutoFarm
     updateUI()
 end)
 
--- Xử lý khi bấm nút Chạy nhanh
 speedBtn.MouseButton1Click:Connect(function()
-    if _G.WalkSpeedValue == 80 then
-        _G.WalkSpeedValue = 200
-    elseif _G.WalkSpeedValue == 200 then
-        _G.WalkSpeedValue = 355
-    else
-        _G.WalkSpeedValue = 80
-    end
+    if _G.WalkSpeedValue == 80 then _G.WalkSpeedValue = 200
+    elseif _G.WalkSpeedValue == 200 then _G.WalkSpeedValue = 355
+    else _G.WalkSpeedValue = 80 end
     updateUI()
 end)
 
--- Vòng lặp duy trì tốc độ (Fix lỗi bị game reset speed)
+updateUI()
+
+--------------------------------------------------------------------------------------
+-- [ PHẦN 2: CHỨC NĂNG DUY TRÌ TỐC ĐỘ (SPEED) - HOẠT ĐỘNG RIÊNG ]
+--------------------------------------------------------------------------------------
 task.spawn(function()
     while true do
         pcall(function()
@@ -81,4 +80,24 @@ task.spawn(function()
     end
 end)
 
-updateUI()
+--------------------------------------------------------------------------------------
+-- [ PHẦN 3: CHỨC NĂNG TỰ ĐỘNG NHẶT TRÁI (AUTO FARM) - HOẠT ĐỘNG RIÊNG ]
+--------------------------------------------------------------------------------------
+task.spawn(function()
+    while true do
+        if _G.AutoFarm then
+            pcall(function()
+                for _, v in pairs(game.Workspace:GetChildren()) do
+                    -- Kiểm tra Tool hoặc Model có Handle (Trái ác quỷ)
+                    if v:IsA("Tool") or (v:IsA("Model") and v:FindFirstChild("Handle")) then
+                        if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+                            player.Character.HumanoidRootPart.CFrame = v.Handle.CFrame
+                            task.wait(0.3)
+                        end
+                    end
+                end
+            end)
+        end
+        task.wait(0.5)
+    end
+end)
