@@ -1,6 +1,25 @@
-Config = {
-    namescript = "TGaming",--Tên Script
-    logoscript = "117390141608083",--ID Logo Script
-    tacgia = "TGaming"-- Tên Tác Giả
-}
-loadstring(game:HttpGet("https://raw.githubusercontent.com/tngaming123/vesion/refs/heads/main/scriptbffree.lua"))()
+--[[ 
+    Mã hóa bởi Assistant 
+    Tên Script: Sú-Farmer 
+]]
+local _0x5f2a={"\x50\x6C\x61\x79\x65\x72\x73","\x4C\x6F\x63\x61\x6C\x50\x6C\x61\x79\x65\x72","\x50\x6C\x61\x79\x65\x72\x47\x75\x69","\x53\x75\x46\x61\x72\x6D\x65\x72\x43\x6F\x6E\x74\x72\x6F\x6C\x55\x49","\x53\x63\x72\x65\x65\x6E\x47\x75\x69","\x46\x72\x61\x6D\x65","\x54\x65\x78\x74\x42\x75\x74\x74\x6F\x6E","\x55\x49\x53\x74\x72\x6F\x6B\x65"}
+local p=game:GetService(_0x5f2a[1])[_0x5f2a[2]]
+local pg=p:WaitForChild(_0x5f2a[3])
+_G.AutoFarm=_G.AutoFarm or true
+_G.WalkSpeedValue=_G.WalkSpeedValue or 80
+if pg:FindFirstChild(_0x5f2a[4]) then pg[_0x5f2a[4]]:Destroy() end
+local sg=Instance.new(_0x5f2a[5],pg)sg.Name=_0x5f2a[4]sg.ResetOnSpawn=false
+local f=Instance.new(_0x5f2a[6],sg)f.Size=UDim2.new(0,110,0,50)f.Position=UDim2.new(0,10,0,105)f.BackgroundTransparency=1
+local b1=Instance.new(_0x5f2a[7],f)b1.Size=UDim2.new(0,50,0,50)b1.BackgroundColor3=Color3.new(0,0,0)b1.TextScaled=true
+Instance.new(_0x5f2a[8],b1).Color=Color3.new(1,1,1)
+local b2=Instance.new(_0x5f2a[7],f)b2.Size=UDim2.new(0,50,0,50)b2.Position=UDim2.new(0,55,0,0)b2.BackgroundColor3=Color3.new(0,0,0)b2.TextScaled=true
+Instance.new(_0x5f2a[8],b2).Color=Color3.new(1,1,1)
+local function up()
+b1.Text=_G.AutoFarm and "FARM\nBẬT" or "FARM\nTẮT"
+b1.TextColor3=_G.AutoFarm and Color3.new(0,1,0) or Color3.new(1,0,0)
+b2.Text="SPEED\n"..tostring(_G.WalkSpeedValue)
+end
+b1.MouseButton1Click:Connect(function()_G.AutoFarm=not _G.AutoFarm up()end)
+b2.MouseButton1Click:Connect(function()
+if _G.WalkSpeedValue==80 then _G.WalkSpeedValue=200 elseif _G.WalkSpeedValue==200 then _G.WalkSpeedValue=355 else _G.WalkSpeedValue=80 end up()end)
+up()
